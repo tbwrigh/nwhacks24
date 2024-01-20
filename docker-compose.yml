@@ -45,6 +45,10 @@ services:
     depends_on:
       database:
         condition: service_healthy
+    develop:
+      watch:
+        - action: rebuild
+          path: ./backend/migrations/
   backend:
     container_name: backend
     build: ./backend
@@ -64,6 +68,10 @@ services:
         condition: service_completed_successfully
       minio:
         condition: service_healthy
+    develop:
+      watch:
+        - action: rebuild
+          path: ./backend/
 
 volumes:
   nwhacks-db-volume:
