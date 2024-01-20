@@ -1,10 +1,9 @@
 import sqlalchemy
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from .base import Base
 
-from backend.db import DeclarativeBase
-
-class User(DeclarativeBase):
+class User(Base):
     __tablename__ = 'users'
     __tableargs__ = (UniqueConstraint('username', 'email'),)
 
