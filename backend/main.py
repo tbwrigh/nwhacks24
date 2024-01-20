@@ -73,8 +73,6 @@ def create_session(user_id: int):
 
 @app.post("/login")
 def login(user: User = Depends(authenticate_user)):
-    print("login!!!")
-    print(user)
     session_id = create_session(user.id)
     return {"message": "Logged in successfully", "session_id": session_id}
 
@@ -95,8 +93,6 @@ def get_user_from_session(session_id: int):
     if user_id is None:
         return None
     user_id = int(user_id)
-    print(user_id)
-    print(type(user_id))
     with app.state.db.session() as session:
         user = session.query(User).filter(User.id == user_id).first()
         return user
