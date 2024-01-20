@@ -13,4 +13,4 @@ class User(Base):
     password: Mapped[str] = mapped_column(sqlalchemy.String(50), nullable=False)
 
     def __repr__(self):
-        return f"<User(username={self.username}, email={self.email}, first_name={self.first_name}, last_name={self.last_name})>"
+        return f"<User(user_id={self.id}, username={self.username}, email={self.email})>"
