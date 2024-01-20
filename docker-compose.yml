@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  database:
+    container_name: database
+    image: postgres
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    ports:
+      - 5432:5432
+    volumes:
+      - nwhacks-db-volume:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres=value
+  minio:
+    image: quay.io/minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    volumes:
+      - minio_data:/data
+    ports:
+      - 9000:9000
+      - 9001:9001
+  backend:
+    container_name: backend
+    build: ./backend
+    restart: always
+    ports:
+      - 8000:8000
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@database:5432/postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    depends_on:
+      database:
+        condition: service_healthy
+
+volumes:
+  nwhacks-db-volume:
+  minio_data:
