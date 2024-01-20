@@ -30,6 +30,21 @@ services:
     ports:
       - 9000:9000
       - 9001:9001
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+  migration:
+    container_name: alembic-migration
+    build: ./backend
+    command: alembic upgrade head
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@database:5432/postgres
+    depends_on:
+      database:
+        condition: service_healthy
   backend:
     container_name: backend
     build: ./backend
@@ -45,7 +60,9 @@ services:
       retries: 10
       start_period: 10s
     depends_on:
-      database:
+      migration:
+        condition: service_completed_successfully
+      minio:
         condition: service_healthy
 
 volumes:
