@@ -12,6 +12,8 @@ const CreatePage = ({ route, navigation }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isLockButtonClicked, setIsLockButtonClicked] = useState(false);
   const [lockDuration, setLockDuration] = useState('');
+  const [isShareButtonClicked, setIsShareButtonClicked] = useState(false);
+  const [shareUsername, setShareUsername] = useState('');
 
   const blobToBase64 = (blob) => {
     return new Promise((resolve, reject) => {
@@ -225,6 +227,38 @@ const CreatePage = ({ route, navigation }) => {
   }
 
 
+  const handleShareModalClose = () => {
+    setIsShareButtonClicked(false);
+    setShareUsername('');
+  }
+
+  const handleShare = async (username) => {
+    const session_id = await AsyncStorage.getItem('session_id').catch((error) => {
+      alert("Share failed! (AsyncStorage)");
+      return;
+    });
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Cookie', 'session_id='+session_id);
+    const response = await fetch(process.env.EXPO_PUBLIC_API_URL +'/vault/share/' + vaultName, {
+      headers: headers,
+      method: 'POST',
+      body: JSON.stringify({
+        username: username,
+      }),
+    }).catch((error) => {
+      alert("Share failed! (REQUEST)");
+      return;
+    });
+
+    if (response.status !== 200) {
+      alert("Share failed! (not 200)");
+      return;
+    }
+
+    handleShareModalClose();
+  }
+
   return (
     <View style={styles.container}>
       {
@@ -239,6 +273,13 @@ const CreatePage = ({ route, navigation }) => {
         editable && (
           <TouchableOpacity style={styles.lockButton} onPress={() => {setIsLockButtonClicked(true)}}>
             <Icon name="lock" size={24} color="white" />
+          </TouchableOpacity>
+        )
+      }
+      {
+        editable && (
+          <TouchableOpacity style={styles.shareButton} onPress={() => {setIsShareButtonClicked(true)}}>
+            <Icon name="share" size={24} color="white" />
           </TouchableOpacity>
         )
       }
@@ -268,7 +309,31 @@ const CreatePage = ({ route, navigation }) => {
                 <Text style={styles.buttonText}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.modalButton} onPress={() => {handleLock(lockDuration, navigation)}}>
-                <Text style={styles.buttonText}>Create</Text>
+                <Text style={styles.buttonText}>Lock</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal for entering share */}
+      <Modal transparent={true} animationType="slide" visible={isShareButtonClicked}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Enter Username:</Text>
+            <TextInput
+              style={styles.input}
+              value={shareUsername}
+              onChangeText={(text) => setShareUsername(text)}
+              autoCapitalize='none'
+              placeholder="Username"
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity style={styles.modalButton} onPress={handleShareModalClose}>
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalButton} onPress={() => {handleShare(shareUsername)}}>
+                <Text style={styles.buttonText}>Share</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -381,6 +446,16 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '5%', // Set to 0 to position at the absolute top
     left: 20,
+    backgroundColor: 'blue',
+    borderRadius: 50,
+    padding: 10,
+    marginTop: 20,
+    zIndex: 1, // Ensures the plus button stays above the FlatList
+  },
+  shareButton: {
+    position: 'absolute',
+    top: '5%', // Set to 0 to position at the absolute top
+    left: '50%',
     backgroundColor: 'blue',
     borderRadius: 50,
     padding: 10,
