@@ -32,6 +32,7 @@ def startup_event():
     app.state.db = DB()
     app.state.cache = base.Client((getenv("MEMCACHE_HOST"), int(getenv("MEMCACHE_PORT"))))
     app.state.session_count = 1
+    app.state.minio_client = Minio(getenv("MINIO_ENDPOINT"), access_key=getenv("MINIO_ACCESS_KEY"), secret_key=getenv("MINIO_SECRET_KEY"), secure=False)
 
 @app.post("/signup")
 def sign_up(username: str = Body(...), email: str = Body(...), password: str = Body(...)):
