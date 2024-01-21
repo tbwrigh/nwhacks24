@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, Text, TouchableOpacity, StyleSheet, Image, Modal, Button } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import base64 from 'react-native-base64';
 
 const CreatePage = ({ route, navigation }) => {
 
@@ -9,33 +11,96 @@ const CreatePage = ({ route, navigation }) => {
   const [data, setData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
 
+  const blobToBase64 = (blob) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        // The FileReader has completed reading the blob, resolve the promise with the result
+        const base64String = reader.result.replace(/^data:.+;base64,/, '');
+        resolve(base64String);
+      };
+      reader.onerror = error => reject(error); // In case of error with FileReader
+      reader.readAsDataURL(blob); // Start reading the blob as DataURL
+    });
+  };
+
+  const loadObjects = async () => {
+    const session_id = await AsyncStorage.getItem('session_id');
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Cookie', 'session_id='+session_id);
+    const response = await fetch(process.env.EXPO_PUBLIC_API_URL +'/vault/objects/' + vaultName, {
+      headers: headers,
+      method: 'GET',
+    }).catch((error) => {
+      alert("Vault scan failed! (REQUEST)");
+      return;
+    });
+    if (response.status !== 200) {
+      alert("Vault scan failed! (not 200)");
+      return;
+    }
+    const data = await response.json().catch((error) => {
+      alert("Vault scan failed! (JSON)");
+      return;
+    });
+
+    const objects = data['objects'];
+
+    const cards = []
+
+    for (var i = 0; i < objects.length; i++) {
+      const object = objects[i];
+      const card = {
+        id: i.toString(),
+        imageSource: await getImage(object["_object_name"]),
+      };
+      cards.push(card);
+    }
+
+    setData(cards);
+  }
+
+  const getImage = async (object) => {
+    const session_id = await AsyncStorage.getItem('session_id');
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Cookie', 'session_id='+session_id);
+    const response = await fetch(process.env.EXPO_PUBLIC_API_URL +'/vault/objects/' + vaultName + '/' + object, {
+      headers: headers,
+      method: 'GET',
+    }).catch((error) => {
+      alert("Vault retrieval failed! (REQUEST)");
+      return;
+    });
+    if (response.status !== 200) {
+      alert("Vault retrieval failed! (not 200)");
+      return;
+    }
+
+    console.log(response);
+
+    const data = await response.blob().catch((error) => {
+      alert("Vault retrieval failed! (blob)");
+      return;
+    });
+
+    return await blobToBase64(data).catch((error) => {
+      alert("Vault retrieval failed! (blobToBase64)");
+      return;
+    });
+  }
+  
+
   useEffect(() => {
-    const fetchData = async () => {
-      const dynamicData = [
-        { id: '1', title: 'Birthday', image: require('../assets/images/birthday.jpg') },
-        { id: '2', title: 'Memories', image: require('../assets/images/mountains.jpg') },
-        { id: '3', title: 'Favorites', image: require('../assets/images/purple.jpg') },
-        { id: '4', title: 'Vacation', image: require('../assets/images/beaches.jpg') },
-      ];
-
-      setData(dynamicData);
-    };
-
-    fetchData();
-
-    const intervalId = setInterval(fetchData, 5000);
-
-    return () => clearInterval(intervalId);
+    loadObjects();
   }, []);
 
   const renderItem = ({ item }) => (
     <TouchableOpacity onPress={() => handlePress(item)}>
       <View style={styles.item}>
         <View style={styles.imageContainer}>
-          <Image source={item.image} style={styles.image} />
-        </View>
-        <View style={styles.textContainer}>
-          <Text style={styles.text}>{item.title}</Text>
+          <Image source={{uri:`data:image/jpeg;base64,${item.imageSource}` }} style={styles.image} />
         </View>
       </View>
     </TouchableOpacity>

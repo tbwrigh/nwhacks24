@@ -19,6 +19,8 @@ from minio import Minio
 from datetime import timedelta
 from datetime import datetime
 
+import base64
+
 load_dotenv()
 
 app = FastAPI()
@@ -188,6 +190,7 @@ def download_object(vault_name: str, object_name: str, user: User = Depends(get_
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Vault is locked")
 
         object = app.state.minio_client.get_object(vault.bucket_name, object_name)
+
         return StreamingResponse(object, media_type="application/octet-stream")
     
 @app.post("/vault/lock/{vault_name}")

@@ -28,7 +28,6 @@ const HomePage = ({ navigation }) => {
       return;
     });
     const vaults = data['vaults'];
-    console.log(vaults);
     const cards = []
     for (var i = 0; i < vaults.length; i++) {
       const vault = vaults[i];
