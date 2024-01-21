@@ -4,83 +4,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
-const getThumbnail = async (vaultName) => {
-  const session_id = await AsyncStorage.getItem('session_id');
-  const headers = new Headers();
-  headers.append('Content-Type', 'application/json');
-  headers.append('Cookie', 'session_id='+session_id);
-  const response = await fetch(process.env.EXPO_PUBLIC_API_URL +'/vault/objects/' + vaultName, {
-    headers: headers,
-    method: 'GET',
-  }).catch((error) => {
-    alert("Vault scan failed! (REQUEST)");
-    return;
-  });
-  if (response.status !== 200) {
-    alert("Vault scan failed! (not 200)");
-    return;
-  }
-  const data = await response.json().catch((error) => {
-    alert("Vault scan failed! (JSON)");
-    return;
-  });
-
-  const objects = data['objects'];
-
-  if (objects.length == 0) {
-    return;
-  }
-
-  const object = objects[0];
-
-  return await getImage(vaultName, object["_object_name"])
-
-}
-
-const getImage = async (vaultName, object) => {
-  const session_id = await AsyncStorage.getItem('session_id');
-  const headers = new Headers();
-  headers.append('Content-Type', 'application/json');
-  headers.append('Cookie', 'session_id='+session_id);
-  const response = await fetch(process.env.EXPO_PUBLIC_API_URL +'/vault/objects/' + vaultName + '/' + object, {
-    headers: headers,
-    method: 'GET',
-  }).catch((error) => {
-    alert("Vault retrieval failed! (REQUEST)");
-    return;
-  });
-  if (response.status !== 200) {
-    alert("Vault retrieval failed! (not 200)");
-    return;
-  }
-
-
-  const data = await response.blob().catch((error) => {
-    alert("Vault retrieval failed! (blob)");
-    return;
-  });
-
-  const base64 = await blobToBase64(data).catch((error) => {
-    alert("Vault retrieval failed! (blobToBase64)");
-    return;
-  });
-
-  return base64 
-}
-
-const blobToBase64 = (blob) => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      // The FileReader has completed reading the blob, resolve the promise with the result
-      const base64String = reader.result.replace(/^data:.+;base64,/, '');
-      resolve(base64String);
-    };
-    reader.onerror = error => reject(error); // In case of error with FileReader
-    reader.readAsDataURL(blob); // Start reading the blob as DataURL
-  });
-};
-
 const HomePage = ({ navigation }) => {
   const [data, setData] = useState([]);
 
@@ -121,30 +44,20 @@ const HomePage = ({ navigation }) => {
         open = now >= open_date_plus_duration;
       }
 
-      let image_uri = false;
+      let image = require('../assets/images/lock.png');
 
-      let image = require('../assets/images/lock.svg');
+      if (draft) {
+        image = require('../assets/images/full.png');
+      }
 
-      // if (open) {
-      //   image = require('../assets/images/empty.png');
-      //   const tmp_image = await getThumbnail(vault['name']);
-      //   if (tmp_image != null) {
-      //     image = tmp_image;
-      //     image_uri = true;
-      //   }
-      // }
-
-      console.log(vault['name'])
-      console.log("image_uri");
-      console.log(image_uri);
-      console.log(image.substring(0, 100));
-      console.log(i)
+      if (open && !draft) {
+        image = require('../assets/images/unlock.png');
+      }
 
       const card = {
         id: vault['id'],
         is_draft: draft,
         is_open: open,
-        is_uri: image_uri,
         title: vault['name'],
         image: image,
       };
@@ -166,8 +79,7 @@ const HomePage = ({ navigation }) => {
     <TouchableOpacity onPress={() => handlePress(item, navigation)}>
       <View style={styles.item}>
         <View style={styles.imageContainer}>
-        {!item.is_uri && ( <Image source={item.image} style={styles.image} /> )}
-        {item.is_uri && ( <Image source={{uri:`data:image/jpeg;base64,${item.image}`}} style={styles.image} /> )}
+          <Image source={item.image} style={styles.image} />
         </View>
         <View style={styles.textContainer}>
           <Text style={styles.text}>{item.title}</Text>
@@ -370,6 +282,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     borderRadius: 8,
+    resizeMode: 'stretch',
   },
   textContainer: {
     flex: 1,
