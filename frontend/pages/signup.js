@@ -26,12 +26,12 @@ const SignupPage = ({ navigation }) => {
         password: password,
       }),
     }).catch((error) => {
-      alert("Signup failed!");
+      alert("Signup failed! (REQUEST)");
       return;
     });
 
     if (response.status !== 200) {
-      alert("Signup failed!");
+      alert("Signup failed! (NOT 200)");
       return;
     }
 
