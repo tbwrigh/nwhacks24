@@ -1,35 +1,70 @@
-import React from 'react';
-import { View, FlatList, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, FlatList, Text, TouchableOpacity, StyleSheet, Image, Modal, Button } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const HomePage = () => {
-  const data = [
-    { id: '1', title: 'Item 1', image: require('../assets/images/birthday.jpg') },
-    { id: '2', title: 'Item 2', image: require('../assets/images/mountains.jpg') },
-    { id: '3', title: 'Item 3', image: require('../assets/images/purple.jpg') },
-    // Add more items as needed
-  ];
+  const [data, setData] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const dynamicData = [
+        { id: '1', title: 'Birthday', image: require('../assets/images/birthday.jpg') },
+        { id: '2', title: 'Memories', image: require('../assets/images/mountains.jpg') },
+        { id: '3', title: 'Favorites', image: require('../assets/images/purple.jpg') },
+        { id: '4', title: 'Vacation', image: require('../assets/images/beaches.jpg') },
+      ];
+
+      setData(dynamicData);
+    };
+
+    fetchData();
+
+    const intervalId = setInterval(fetchData, 5000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const renderItem = ({ item }) => (
     <TouchableOpacity onPress={() => handlePress(item)}>
       <View style={styles.item}>
-        <Image source={item.image} style={{ width: 100, height: 100 }} />
-        <Text>{item.title}</Text>
+        <View style={styles.imageContainer}>
+          <Image source={item.image} style={styles.image} />
+        </View>
+        <View style={styles.textContainer}>
+          <Text style={styles.text}>{item.title}</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
 
   const handlePress = (item) => {
-    // Handle the press event for the selected item
-    console.log(`Pressed: ${item.title}`);
+    setSelectedItem(item);
+  };
+
+  const handleClose = () => {
+    setSelectedItem(null);
   };
 
   return (
-    <FlatList
-      data={data}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.id}
-      style={styles.container}
-    />
+    <View style={styles.container}>
+      <FlatList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        style={styles.flatList}
+      />
+      {selectedItem && (
+        <Modal transparent={true} animationType="slide">
+          <View style={styles.modalContainer}>
+            <Image source={selectedItem.image} style={styles.enlargedImage} />
+            <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
+              <Icon name="close" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      )}
+    </View>
   );
 };
 
@@ -37,10 +72,47 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  flatList: {
+    flex: 1,
+  },
   item: {
+    flexDirection: 'row',
     padding: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
+  },
+  imageContainer: {
+    flex: 1,
+    marginRight: 10,
+  },
+  image: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+  },
+  textContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  enlargedImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'stretch',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
   },
 });
 
