@@ -13,13 +13,12 @@ const HomePage = () => {
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Cookie', 'session_id='+session_id);
-    const response = await fetch('https://nwhacks.tbwright.dev/vaults', {
+    const response = await fetch(process.env.EXPO_PUBLIC_API_URL + '/vaults', {
       headers: headers,
       method: 'GET',
     });
     const data = await response.json();
     const vaults = data['vaults'];
-    console.log(vaults);
     const cards = []
     for (var i = 0; i < vaults.length; i++) {
       const vault = vaults[i];
