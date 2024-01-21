@@ -6,12 +6,12 @@ import * as ImagePicker from 'expo-image-picker';
 
 const CreatePage = ({ route, navigation }) => {
 
-  const { vaultName } = route.params;
+  const { vaultName, editable } = route.params;
 
   const [data, setData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isLockButtonClicked, setIsLockButtonClicked] = useState(false);
-  const [lockDuration, setLockDuration] = useState(0);
+  const [lockDuration, setLockDuration] = useState('');
 
   const blobToBase64 = (blob) => {
     return new Promise((resolve, reject) => {
@@ -215,16 +215,21 @@ const CreatePage = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Plus button */}
-      <TouchableOpacity
-        style={styles.plusButton}
-        onPress={pickImage}
-      >
-        <Icon name="plus" size={24} color="white" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.lockButton} onPress={() => {setIsLockButtonClicked(true)}}>
-        <Icon name="lock" size={24} color="white" />
-    </TouchableOpacity>
+      {
+        editable && (
+          <TouchableOpacity style={styles.plusButton} onPress={pickImage}>
+            <Icon name="plus" size={24} color="white" />
+          </TouchableOpacity>
+        )
+      }
+
+      {
+        editable && (
+          <TouchableOpacity style={styles.lockButton} onPress={() => {setIsLockButtonClicked(true)}}>
+            <Icon name="lock" size={24} color="white" />
+          </TouchableOpacity>
+        )
+      }
 
       {/* FlatList */}
       <FlatList

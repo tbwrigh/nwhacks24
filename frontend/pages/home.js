@@ -31,8 +31,23 @@ const HomePage = ({ navigation }) => {
     const cards = []
     for (var i = 0; i < vaults.length; i++) {
       const vault = vaults[i];
+
+      const draft = vault['locked_at'] == null;
+
+      let open = true;
+
+      if (!draft) {
+        const open_date = new Date(vault['locked_at']);
+        const lock_duration = vault['days_locked_for'];
+        const now = new Date();
+        const open_date_plus_duration = new Date(open_date.getTime() + lock_duration * 86400000);
+        open = now >= open_date_plus_duration;
+      }
+
       const card = {
         id: i.toString(),
+        is_draft: draft,
+        is_open: open,
         title: vault['name'],
         image: require('../assets/images/birthday.jpg'),
       };
@@ -64,8 +79,12 @@ const HomePage = ({ navigation }) => {
   );
 
   const handlePress = async (item, navigation) => {
+    if (!item.is_open) {
+      return;
+    }
     navigation.navigate('Create', {
       vaultName: item.title,
+      editable: item.is_draft,
     });
   };
 
@@ -112,6 +131,7 @@ const HomePage = ({ navigation }) => {
     handleModalClose();
     navigation.navigate('Create', {
       vaultName: vaultTitle,
+      editable: true,
     });
   };
 
