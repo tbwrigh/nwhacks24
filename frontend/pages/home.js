@@ -65,8 +65,21 @@ const HomePage = () => {
 
   const [isPlusButtonClicked, setIsPlusButtonClicked] = useState(false);
 
+  const [newVaultTitle, setNewVaultTitle] = useState('');
+
   const handlePlusButton = () => {
-    console.log('Plus button pressed');
+    setIsPlusButtonClicked(true);
+  };
+
+  const handleModalClose = () => {
+    setIsPlusButtonClicked(false);
+    setNewVaultTitle('');
+  };
+
+  const handleCreateVault = () => {
+    console.log('Creating new vault with title: ' + newVaultTitle);
+
+    handleModalClose();
   };
 
   return (
@@ -89,7 +102,7 @@ const HomePage = () => {
 
       {/* Modal */}
       {selectedItem && (
-        <Modal transparent={true} animationType="slide">
+        <Modal transparent={true} animationType="slide" visible={isPlusButtonClicked}>
           <View style={styles.modalContainer}>
             <Image source={selectedItem.image} style={styles.enlargedImage} />
             <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
