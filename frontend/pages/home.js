@@ -170,7 +170,7 @@ const HomePage = ({ navigation }) => {
         style={styles.logoutButton}
         onPress={handleLogoutButton}
       >
-        <Icon name="sign-out" size={24} color="white" />
+        <Icon name="sign-out" size={24} color="blue" />
       </TouchableOpacity>
 
       {/* FlatList */}
@@ -178,7 +178,7 @@ const HomePage = ({ navigation }) => {
         data={data}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        style={styles.flatList}
+        style={styles.flatListContainer}
       />
 
       {/* Modal for entering title */}
@@ -233,6 +233,10 @@ const styles = StyleSheet.create({
   flatList: {
     flex: 1,
   },
+  flatListContainer: {
+    flex: 1,
+    marginTop: 80,
+  },
   item: {
     flexDirection: 'row',
     padding: 20,
@@ -269,11 +273,22 @@ const styles = StyleSheet.create({
   },
   plusButton: {
     position: 'absolute',
-    top: 0, // Set to 0 to position at the absolute top
+    top: '5%', // Set to 0 to position at the absolute top
     right: 20,
     backgroundColor: 'blue',
     borderRadius: 50,
     padding: 10,
+    marginBottom: 20,
+    zIndex: 1, // Ensures the plus button stays above the FlatList
+  },
+  logoutButton: {
+    position: 'absolute',
+    top: '5%', // Set to 0 to position at the absolute top
+    left: 20,
+    backgroundColor: 'white',
+    borderRadius: 50,
+    padding: 10,
+    marginBottom: 20,
     zIndex: 1, // Ensures the plus button stays above the FlatList
   },
   modalContainer: {
