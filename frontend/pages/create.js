@@ -142,7 +142,7 @@ const CreatePage = ({ route, navigation }) => {
       {selectedItem && (
         <Modal transparent={true} animationType="slide">
           <View style={styles.modalContainer}>
-            <Image source={selectedItem.image} style={styles.enlargedImage} />
+            <Image source={{uri:`data:image/jpeg;base64,${selectedItem.imageSource}` }} style={styles.enlargedImage} />
             <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
               <Icon name="close" size={24} color="white" />
             </TouchableOpacity>
