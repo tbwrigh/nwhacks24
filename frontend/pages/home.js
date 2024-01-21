@@ -95,7 +95,7 @@ const HomePage = ({ navigation }) => {
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Cookie', 'session_id='+session_id);
-    const response = await fetch(process.env.EXPO_PUBLIC_API_URL +'/vaults', {
+    const response = await fetch(process.env.EXPO_PUBLIC_API_URL +'/new-vault', {
       headers: headers,
       method: 'POST',
       body: JSON.stringify({
