@@ -178,6 +178,37 @@ const CreatePage = ({ route, navigation }) => {
   }
 
   const handleLock = async (duration, navigation) => {
+    const session_id = await AsyncStorage.getItem('session_id').catch((error) => {
+      alert("Vault creation failed! (AsyncStorage)");
+      return;
+    });
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Cookie', 'session_id='+session_id);
+    const response = await fetch(process.env.EXPO_PUBLIC_API_URL +'/vault/lock/' + vaultName, {
+      headers: headers,
+      method: 'POST',
+      body: JSON.stringify({
+        duration: duration,
+      }),
+    }).catch((error) => {
+      alert("Vault creation failed! (REQUEST)");
+      return;
+    });
+
+    if (!response.ok) {
+      alert("Vault creation failed! (not ok)");
+      return;
+    }
+
+    if (response.status !== 200) {
+      alert("Vault creation failed! (not 200)");
+      return;
+    }
+
+    handleModalClose();
+
+    navigation.navigate('Home');
 
   }
 
@@ -219,7 +250,7 @@ const CreatePage = ({ route, navigation }) => {
               <TouchableOpacity style={styles.modalButton} onPress={handleModalClose}>
                 <Text style={styles.buttonText}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.modalButton} onPress={() => {handleLock(newVaultTitle, navigation)}}>
+              <TouchableOpacity style={styles.modalButton} onPress={() => {handleLock(lockDuration, navigation)}}>
                 <Text style={styles.buttonText}>Create</Text>
               </TouchableOpacity>
             </View>
