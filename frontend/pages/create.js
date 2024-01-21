@@ -153,6 +153,11 @@ const CreatePage = ({ route, navigation }) => {
         return;
       }
 
+      const base64 = await blobToBase64(result.assets[0]["uri"]);
+      if (base64) {
+        await AsyncStorage.setItem(`${vaultName}-${name}`, base64);
+      }
+
       await loadObjects();
     }
   };  
