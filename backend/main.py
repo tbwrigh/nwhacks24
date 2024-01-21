@@ -16,6 +16,8 @@ from db import DB
 
 from minio import Minio
 
+from datetime import timedelta
+from datetime import datetime
 
 load_dotenv()
 
@@ -115,7 +117,7 @@ def new_vault(user: User = Depends(get_authenticated_user_from_session_id), name
     bucket_name = f"{user.username}-vault-{name['name']}-{random.randint(100000000, 999999999)}"
     app.state.minio_client.make_bucket(bucket_name)
     with app.state.db.session() as session:
-        new_vault = Vault(name=name['namefi'], user_id=user.id, bucket_name=bucket_name)
+        new_vault = Vault(name=name['name'], user_id=user.id, bucket_name=bucket_name)
         session.add(new_vault)
         session.commit()
     return {"message": "Vault created successfully"}
@@ -136,7 +138,15 @@ def get_vault(vault_name: str, user: User = Depends(get_authenticated_user_from_
         vault = session.query(Vault).filter(Vault.user_id == user.id, Vault.name == vault_name).first()
         if vault is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vault not found")
-        objects = app.state.minio_client.list_objects(vault.name)
+    
+        if vault.locked_at:
+            unlock_date = vault.locked_at + timedelta(days=vault.days_locked_for)
+
+            if datetime.now().date() < unlock_date:
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Vault is locked")
+
+
+        objects = app.state.minio_client.list_objects(vault.bucket_name)
         return {"objects": objects}
 
 @app.post("/vault/objects/{vault_name}")
@@ -147,10 +157,14 @@ async def upload_object(vault_name: str, user: User = Depends(get_authenticated_
         vault = session.query(Vault).filter(Vault.user_id == user.id, Vault.name == vault_name).first()
         if vault is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vault not found")
+        
+        if vault.locked_at:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Vault was locked")
+
         file_content = await file.read()
         file_size = len(file_content)
         await file.seek(0)
-        app.state.minio_client.put_object(vault.name, file.filename, file.file, length=file_size, content_type=file.content_type)
+        app.state.minio_client.put_object(vault.bucket_name, file.filename, file.file, length=file_size, content_type=file.content_type)
         return {"message": "File uploaded successfully"}
 
 @app.get("/vault/objects/{vault_name}/{object_name}")
@@ -161,5 +175,25 @@ def download_object(vault_name: str, object_name: str, user: User = Depends(get_
         vault = session.query(Vault).filter(Vault.user_id == user.id, Vault.name == vault_name).first()
         if vault is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vault not found")
-        object = app.state.minio_client.get_object(vault.name, object_name)
+
+        if vault.locked_at:
+            unlock_date = vault.locked_at + timedelta(days=vault.days_locked_for)
+
+            if datetime.now().date() < unlock_date:
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Vault is locked")
+
+        object = app.state.minio_client.get_object(vault.bucket_name, object_name)
         return StreamingResponse(object, media_type="application/octet-stream")
+    
+@app.post("/vault/lock/{vault_name}")
+def lock_vault(vault_name: str, user: User = Depends(get_authenticated_user_from_session_id), duration=Body(...)):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authenticated")
+    with app.state.db.session() as session:
+        vault = session.query(Vault).filter(Vault.user_id == user.id, Vault.name == vault_name).first()
+        if vault is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vault not found")
+        vault.locked_at = datetime.now().date()
+        vault.days_locked_for = duration['duration']
+        session.commit()
+        return {"message": "Vault locked successfully"}

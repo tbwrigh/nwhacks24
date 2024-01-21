@@ -25,6 +25,8 @@ def upgrade() -> None:
         sa.Column("name", sa.String(length=255), nullable=False),
         sa.Column("user_id", sa.Integer(), nullable=False),
         sa.Column("bucket_name", sa.String(length=255), nullable=False),
+        sa.Column("days_locked_for", sa.Integer(), nullable=True),
+        sa.Column("locked_at", sa.Date(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("bucket_name"),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
@@ -32,4 +34,5 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    pass
+
+    op.drop_table("vaults")

@@ -11,6 +11,8 @@ class Vault(Base):
     name: Mapped[str] = mapped_column(sqlalchemy.String(255), nullable=False)
     user_id: Mapped[int] = mapped_column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'), nullable=False)
     bucket_name: Mapped[str] = mapped_column(sqlalchemy.String(255), nullable=False)
+    days_locked_for: Mapped[int] = mapped_column(sqlalchemy.Integer, nullable=True)
+    locked_at: Mapped[str] = mapped_column(sqlalchemy.Date, nullable=True)
 
     def __repr__(self):
         return f"<Vault(vault_id={self.id}, name={self.name}, user_id={self.user_id}, bucket_name={self.bucket_name})>"
