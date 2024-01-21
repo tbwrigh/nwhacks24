@@ -64,6 +64,11 @@ const CreatePage = ({ route, navigation }) => {
   }
 
   const getImage = async (object) => {
+    const cachedImage = await AsyncStorage.getItem(`${vaultName}-${object}`);
+    if (cachedImage) {
+      return cachedImage;
+    }
+
     const session_id = await AsyncStorage.getItem('session_id');
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
@@ -90,6 +95,8 @@ const CreatePage = ({ route, navigation }) => {
       alert("Vault retrieval failed! (blobToBase64)");
       return;
     });
+
+    await AsyncStorage.setItem(`${vaultName}-${object}`, base64);
 
     return base64 
   }
