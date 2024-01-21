@@ -1,29 +1,45 @@
 // Signup.js
 
-import React from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, Button, TouchableOpacity } from 'react-native';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import base64 from 'react-native-base64'
+
+
+const doLogin = async (username, password, navigation) => {
+  var headers = new Headers();
+  headers.append("Authorization", "Basic " + base64.encode(username+":"+password));
+  const response = await fetch("http://localhost:8000/login", {
+    headers: headers,
+    method: 'POST',
+  })
+  if (response.status !== 200) {
+    alert("Login failed!");
+    return;
+  }
+  const json = await response.json();
+  await AsyncStorage.setItem('session_id', json['session_id'].toString());
+  navigation.navigate('Home'); // this is a navigation prop that doesnt work for some reason I think
+}
 
 const LoginPage = ({ navigation }) => {
-  // const handleLogin = () => {
-  //   console.log('Login pressed');
-  // };
+  const [username, setUsername] = useState(''); // Add state for username
+  const [password, setPassword] = useState(''); // Add state for password
 
   return (
     <View style={styles.container}>
       <View style={styles.box}>
         <Text style={styles.headerText}>Login</Text>
-        
         <View style={styles.inputContainer}>
           <Text style={styles.subText}>Username</Text>
-          <TextInput style={styles.textBar} placeholder="Enter your username or email" />
+          <TextInput style={styles.textBar} autoCapitalize="none" onChangeText={text => setUsername(text)} placeholder="Enter your username or email" />
         </View>
-
         <View style={styles.inputContainer}>
           <Text style={styles.subText}>Password</Text>
-          <TextInput style={styles.textBar} placeholder="Enter your password" />
+          <TextInput style={styles.textBar} autoCapitalize="none" onChangeText={text => setPassword(text)} placeholder="Enter your password" />
         </View>
-
-        <TouchableOpacity style={styles.loginButton} onPress={() => {}}>
+        <TouchableOpacity style={styles.loginButton} onPress={() => {doLogin(username, password, navigation)}}>
           <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
 
@@ -68,8 +84,6 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     borderWidth: 1,
     borderRadius: 10,
-    autoCapitalize: 'none',
-    paddingLeft: 10,
   },
   loginButton: {
     backgroundColor: 'green',
