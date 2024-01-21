@@ -144,8 +144,7 @@ const CreatePage = ({ route, navigation }) => {
         return;
       }
 
-      loadObjects();
-
+      await loadObjects();
     }
   };  
 
