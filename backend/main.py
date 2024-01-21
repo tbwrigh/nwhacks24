@@ -114,6 +114,10 @@ def protected_endpoint(user: dict = Depends(get_authenticated_user_from_session_
 def new_vault(user: User = Depends(get_authenticated_user_from_session_id), name=Body(...)):
     if user is None:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authenticated")
+    with app.state.db.session() as session:
+        vault = session.query(Vault).filter(Vault.user_id == user.id, Vault.name == name['name']).first()
+        if vault:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Vault with that name already exists")
     bucket_name = f"{user.username}-vault-{name['name']}-{random.randint(100000000, 999999999)}"
     app.state.minio_client.make_bucket(bucket_name)
     with app.state.db.session() as session:
