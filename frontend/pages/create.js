@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, FlatList, Text, TouchableOpacity, StyleSheet, Image, Modal, Button } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const CreatePage = () => {
+const CreatePage = ({ route, navigation }) => {
+
+  const { vaultName } = route.params;
+
   const [data, setData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
 

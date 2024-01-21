@@ -53,7 +53,7 @@ const HomePage = ({ navigation }) => {
   }, []);
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={() => handlePress(item)}>
+    <TouchableOpacity onPress={() => handlePress(item, navigation)}>
       <View style={styles.item}>
         <View style={styles.imageContainer}>
           <Image source={item.image} style={styles.image} />
@@ -65,8 +65,12 @@ const HomePage = ({ navigation }) => {
     </TouchableOpacity>
   );
 
-  const handlePress = (item) => {
+  const handlePress = async (item, navigation) => {
     setSelectedItem(item);
+
+    navigation.navigate('Create', {
+      vaultName: item.title,
+    });
   };
 
   const handleClose = () => {
@@ -114,7 +118,9 @@ const HomePage = ({ navigation }) => {
     }
 
     handleModalClose();
-    navigation.navigate('Create');
+    navigation.navigate('Create', {
+      vaultName: vaultTitle,
+    });
   };
 
   const handleProfileButton = () => {
