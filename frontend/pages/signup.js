@@ -4,9 +4,39 @@ import React from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
 const SignupPage = ({ navigation }) => {
-  // const handleLogin = () => {
-  //   console.log('Login pressed');
-  // };
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [confirmPassword, setConfirmPassword] = React.useState('');
+
+  const doSignup = async (username, email, password, confirmPassword, navigation) => {
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    var headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    const response = await fetch("http://localhost:8000/signup", {
+      headers: headers,
+      method: 'POST',
+      body: JSON.stringify({
+        username: username,
+        email: email,
+        password: password,
+      }),
+    }).catch((error) => {
+      alert("Signup failed!");
+      return;
+    });
+
+    if (response.status !== 200) {
+      alert("Signup failed!");
+      return;
+    }
+
+    navigation.navigate('Login');
+  }
 
   return (
     <View style={styles.container}>
@@ -15,25 +45,25 @@ const SignupPage = ({ navigation }) => {
         
         <View style={styles.inputContainer}>
           <Text style={styles.subText}>Username</Text>
-          <TextInput style={styles.textBar} placeholder="Enter your username" />
+          <TextInput style={styles.textBar} onChangeText={text => setUsername(text)} placeholder="Enter your username" />
         </View>
 
         <View style={styles.inputContainer}>
           <Text style={styles.subText}>Email</Text>
-          <TextInput style={styles.textBar} placeholder="Enter your email" />
+          <TextInput style={styles.textBar} onChangeText={text => setEmail(text)} placeholder="Enter your email" />
         </View>
 
         <View style={styles.inputContainer}>
           <Text style={styles.subText}>Password</Text>
-          <TextInput style={styles.textBar} placeholder="Enter your password" />
+          <TextInput style={styles.textBar}  onChangeText={text => setPassword(text)} placeholder="Enter your password" />
         </View>
 
         <View style={styles.inputContainer}>
           <Text style={styles.subText}>Confirm Password</Text>
-          <TextInput style={styles.textBar} placeholder="Confirm your password" />
+          <TextInput style={styles.textBar}  onChangeText={text => setConfirmPassword(text)} placeholder="Confirm your password" />
         </View>
 
-        <TouchableOpacity style={styles.signUpButton} onPress={() => navigation.navigate('Home')}>
+        <TouchableOpacity style={styles.signUpButton} onPress={() => doSignup(username, email, password, confirmPassword, navigation)}>
           <Text style={styles.loginButtonText}>Sign Up</Text>
         </TouchableOpacity>
       </View>
