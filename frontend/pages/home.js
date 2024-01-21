@@ -175,6 +175,7 @@ const HomePage = ({ navigation }) => {
               style={styles.input}
               placeholder="Vault Title"
               value={newVaultTitle}
+              autoCapitalize="none"
               onChangeText={(text) => setNewVaultTitle(text)}
             />
             <View style={styles.modalButtons}>

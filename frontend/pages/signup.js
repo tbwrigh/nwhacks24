@@ -45,22 +45,22 @@ const SignupPage = ({ navigation }) => {
         
         <View style={styles.inputContainer}>
           <Text style={styles.subText}>Username</Text>
-          <TextInput style={styles.textBar} onChangeText={text => setUsername(text)} placeholder="Enter your username" />
+          <TextInput style={styles.textBar} autoCapitalize="none" onChangeText={text => setUsername(text)} placeholder="Enter your username" />
         </View>
 
         <View style={styles.inputContainer}>
           <Text style={styles.subText}>Email</Text>
-          <TextInput style={styles.textBar} onChangeText={text => setEmail(text)} placeholder="Enter your email" />
+          <TextInput style={styles.textBar} autoCapitalize="none" onChangeText={text => setEmail(text)} placeholder="Enter your email" />
         </View>
 
         <View style={styles.inputContainer}>
           <Text style={styles.subText}>Password</Text>
-          <TextInput style={styles.textBar}  onChangeText={text => setPassword(text)} placeholder="Enter your password" />
+          <TextInput style={styles.textBar} autoCapitalize="none" onChangeText={text => setPassword(text)} placeholder="Enter your password" />
         </View>
 
         <View style={styles.inputContainer}>
           <Text style={styles.subText}>Confirm Password</Text>
-          <TextInput style={styles.textBar}  onChangeText={text => setConfirmPassword(text)} placeholder="Confirm your password" />
+          <TextInput style={styles.textBar} autoCapitalize="none" onChangeText={text => setConfirmPassword(text)} placeholder="Confirm your password" />
         </View>
 
         <TouchableOpacity style={styles.signUpButton} onPress={() => doSignup(username, email, password, confirmPassword, navigation)}>
