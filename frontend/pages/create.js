@@ -281,13 +281,15 @@ const CreatePage = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#e4e8f5',
+    paddingTop: '20%',
   },
   flatList: {
     flex: 1,
   },
   item: {
     flexDirection: 'row',
-    padding: 20,
+    padding: 30,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
@@ -354,7 +356,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
     borderRadius: 50,
     padding: 10,
-    marginBottom: 20,
+    marginTop: 20,
     zIndex: 1, // Ensures the plus button stays above the FlatList
   },
   lockButton: {
@@ -364,7 +366,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
     borderRadius: 50,
     padding: 10,
-    marginBottom: 20,
+    marginTop: 20,
     zIndex: 1, // Ensures the plus button stays above the FlatList
   },
 });
