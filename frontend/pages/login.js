@@ -1,5 +1,3 @@
-// Signup.js
-
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Button, TouchableOpacity } from 'react-native';
 
@@ -42,18 +40,18 @@ const LoginPage = ({ navigation }) => {
         <Text style={styles.headerText}>Login</Text>
         <View style={styles.inputContainer}>
           <Text style={styles.subText}>Username</Text>
-          <TextInput style={styles.textBar} autoCapitalize="none" onChangeText={text => setUsername(text)} placeholder="Enter your username or email" />
+          <TextInput style={styles.textBar} autoCapitalize="none" autoCorrect={false} onChangeText={text => setUsername(text)} placeholder="Enter your username or email" />
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.subText}>Password</Text>
-          <TextInput style={styles.textBar} autoCapitalize="none" onChangeText={text => setPassword(text)} placeholder="Enter your password" secureTextEntry={true} />
+          <TextInput style={styles.textBar} autoCapitalize="none" autoCorrect={false} onChangeText={text => setPassword(text)} placeholder="Enter your password" secureTextEntry={true} />
         </View>
         <TouchableOpacity style={styles.loginButton} onPress={() => {doLogin(username, password, navigation)}}>
-          <Text style={styles.loginButtonText}>Login</Text>
+          <Text style={styles.loginButtonText}>LOGIN</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.signUpButton} onPress={() => navigation.navigate('Signup')}>
-          <Text style={styles.loginButtonText}>Sign Up</Text>
+          <Text style={styles.loginButtonText}>SIGN UP</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -63,42 +61,43 @@ const LoginPage = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#e4e8f5',
     alignItems: 'center',
     justifyContent: 'center',
   },
   box: {
     flex: 1,
-    backgroundColor: '#b0aeae',
+    backgroundColor: 'white',
     alignSelf: 'stretch',
     marginVertical: '50%',
-    borderRadius: 15,
     padding: 20,
     justifyContent: 'center',
-    //alignItems: 'center',
     margin: 20,
   },
   headerText: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 20,
+    color: 'black',
+    marginBottom: 30,
+    alignSelf: 'center',
   },
   subText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'white',
+    color: 'black',
     marginBottom: 5,
   },
   textBar: {
-    height: 40,
-    borderColor: 'black',
+    height: 50,
+    borderColor: '#b0aeae',
     borderWidth: 1,
     borderRadius: 10,
     padding: 15,
+    width: '80%',
+    alignSelf: 'center',
   },
   loginButton: {
-    backgroundColor: 'green',
+    backgroundColor: 'blue',
     borderRadius: 10,
     padding: 10,
     marginVertical: 10,
@@ -106,7 +105,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   signUpButton: {
-    backgroundColor: 'blue',
+    backgroundColor: '#8fe3dc',
     borderRadius: 10,
     padding: 10,
     marginVertical: 10,

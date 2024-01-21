@@ -1,5 +1,3 @@
-// Signup.js
-
 import React from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
@@ -41,30 +39,30 @@ const SignupPage = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.box}>
-        <Text style={styles.headerText}>Signup</Text>
+        <Text style={styles.headerText}>Sign Up</Text>
         
         <View style={styles.inputContainer}>
           <Text style={styles.subText}>Username</Text>
-          <TextInput style={styles.textBar} autoCapitalize="none" onChangeText={text => setUsername(text)} placeholder="Enter your username" />
+          <TextInput style={styles.textBar} autoCapitalize="none" autoCorrect={false} onChangeText={text => setUsername(text)} placeholder="Enter your username" />
         </View>
 
         <View style={styles.inputContainer}>
           <Text style={styles.subText}>Email</Text>
-          <TextInput style={styles.textBar} autoCapitalize="none" onChangeText={text => setEmail(text)} placeholder="Enter your email" />
+          <TextInput style={styles.textBar} autoCapitalize="none" autoCorrect={false} onChangeText={text => setEmail(text)} placeholder="Enter your email" />
         </View>
 
         <View style={styles.inputContainer}>
           <Text style={styles.subText}>Password</Text>
-          <TextInput style={styles.textBar} autoCapitalize="none" onChangeText={text => setPassword(text)} placeholder="Enter your password" />
+          <TextInput style={styles.textBar} autoCapitalize="none" autoCorrect={false} onChangeText={text => setPassword(text)} placeholder="Enter your password" secureTextEntry={true} />
         </View>
 
         <View style={styles.inputContainer}>
           <Text style={styles.subText}>Confirm Password</Text>
-          <TextInput style={styles.textBar} autoCapitalize="none" onChangeText={text => setConfirmPassword(text)} placeholder="Confirm your password" />
+          <TextInput style={styles.textBar} autoCapitalize="none" autoCorrect={false} onChangeText={text => setConfirmPassword(text)} placeholder="Confirm your password" secureTextEntry={true} />
         </View>
 
         <TouchableOpacity style={styles.signUpButton} onPress={() => doSignup(username, email, password, confirmPassword, navigation)}>
-          <Text style={styles.loginButtonText}>Sign Up</Text>
+          <Text style={styles.loginButtonText}>SIGN UP</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -74,37 +72,39 @@ const SignupPage = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#e4e8f5',
     alignItems: 'center',
     justifyContent: 'center',
   },
   box: {
     flex: 1,
-    backgroundColor: 'gray',
+    backgroundColor: 'white',
     alignSelf: 'stretch',
     marginVertical: '35%',
-    borderRadius: 15,
+    //borderRadius: 15,
     padding: 20,
     justifyContent: 'flex-start',
+    margin: 20,
   },
   headerText: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: 'white',
+    color: 'black',
     marginBottom: 20,
+    alignSelf: 'center',
   },
   subText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'white',
+    color: 'black',
     marginBottom: 5,
   },
   textBar: {
-    height: 40,
-    borderColor: 'black',
+    height: 50,
+    borderColor: '#b0aeae',
     borderWidth: 1,
     borderRadius: 10,
-    paddingLeft: 10,
+    padding: 15,
   },
   loginButton: {
     backgroundColor: 'green',
