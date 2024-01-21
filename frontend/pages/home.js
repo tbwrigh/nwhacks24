@@ -1,26 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, Text, TouchableOpacity, StyleSheet, Image, Modal, Button } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 const HomePage = () => {
   const [data, setData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
 
+  const getVaults = async () => {
+    const session_id = await AsyncStorage.getItem('session_id');
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Cookie', 'session_id='+session_id);
+    const response = await fetch('http://localhost:8000/vaults', {
+      headers: headers,
+      method: 'GET',
+    });
+    const data = await response.json();
+    const vaults = data['vaults'];
+    console.log(vaults);
+    const cards = []
+    for (var i = 0; i < vaults.length; i++) {
+      const vault = vaults[i];
+      const card = {
+        id: i.toString(),
+        title: vault['name'],
+        image: require('../assets/images/birthday.jpg'),
+      };
+      cards.push(card);
+    }
+    setData(cards);
+  }
+
   useEffect(() => {
-    const fetchData = async () => {
-      const dynamicData = [
-        { id: '1', title: 'Birthday', image: require('../assets/images/birthday.jpg') },
-        { id: '2', title: 'Memories', image: require('../assets/images/mountains.jpg') },
-        { id: '3', title: 'Favorites', image: require('../assets/images/purple.jpg') },
-        { id: '4', title: 'Vacation', image: require('../assets/images/beaches.jpg') },
-      ];
 
-      setData(dynamicData);
-    };
+    getVaults();
 
-    fetchData();
-
-    const intervalId = setInterval(fetchData, 5000);
+    const intervalId = setInterval(getVaults, 5000);
 
     return () => clearInterval(intervalId);
   }, []);
