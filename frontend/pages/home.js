@@ -13,7 +13,7 @@ const HomePage = () => {
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Cookie', 'session_id='+session_id);
-    const response = await fetch('http://localhost:8000/vaults', {
+    const response = await fetch('https://nwhacks.tbwright.dev/vaults', {
       headers: headers,
       method: 'GET',
     });

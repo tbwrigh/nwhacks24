@@ -17,7 +17,7 @@ const SignupPage = ({ navigation }) => {
 
     var headers = new Headers();
     headers.append("Content-Type", "application/json");
-    const response = await fetch("http://localhost:8000/signup", {
+    const response = await fetch("https://nwhacks.tbwright.dev/signup", {
       headers: headers,
       method: 'POST',
       body: JSON.stringify({

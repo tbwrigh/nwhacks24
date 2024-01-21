@@ -10,7 +10,7 @@ import base64 from 'react-native-base64'
 const doLogin = async (username, password, navigation) => {
   var headers = new Headers();
   headers.append("Authorization", "Basic " + base64.encode(username+":"+password));
-  const response = await fetch("http://localhost:8000/login", {
+  const response = await fetch("https://nwhacks.tbwright.dev/login", {
     headers: headers,
     method: 'POST',
   }).catch((error) => {
