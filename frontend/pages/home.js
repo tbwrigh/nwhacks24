@@ -1,9 +1,9 @@
-// Signup.js
+// Home.js
 
 import React from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
-const LoginPage = ({ navigation }) => {
+const HomePage = ({}) => {
   // const handleLogin = () => {
   //   console.log('Login pressed');
   // };
@@ -11,11 +11,16 @@ const LoginPage = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.box}>
-        <Text style={styles.headerText}>Login</Text>
+        <Text style={styles.headerText}>Signup</Text>
         
         <View style={styles.inputContainer}>
           <Text style={styles.subText}>Username</Text>
-          <TextInput style={styles.textBar} placeholder="Enter your username or email" />
+          <TextInput style={styles.textBar} placeholder="Enter your username" />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.subText}>Email</Text>
+          <TextInput style={styles.textBar} placeholder="Enter your email" />
         </View>
 
         <View style={styles.inputContainer}>
@@ -23,11 +28,12 @@ const LoginPage = ({ navigation }) => {
           <TextInput style={styles.textBar} placeholder="Enter your password" />
         </View>
 
-        <TouchableOpacity style={styles.loginButton} onPress={() => {}}>
-          <Text style={styles.loginButtonText}>Login</Text>
-        </TouchableOpacity>
+        <View style={styles.inputContainer}>
+          <Text style={styles.subText}>Confirm Password</Text>
+          <TextInput style={styles.textBar} placeholder="Confirm your password" />
+        </View>
 
-        <TouchableOpacity style={styles.signUpButton} onPress={() => navigation.navigate('Signup')}>
+        <TouchableOpacity style={styles.signUpButton} onPress={() => navigation.navigate('Home')}>
           <Text style={styles.loginButtonText}>Sign Up</Text>
         </TouchableOpacity>
       </View>
@@ -46,7 +52,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'gray',
     alignSelf: 'stretch',
-    marginVertical: '50%',
+    marginVertical: '35%',
     borderRadius: 15,
     padding: 20,
     justifyContent: 'flex-start',
@@ -97,4 +103,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginPage;
+export default HomePage;
