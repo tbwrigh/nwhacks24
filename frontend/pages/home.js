@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
-const HomePage = () => {
+const HomePage = ({ navigation }) => {
   const [data, setData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
 
@@ -13,11 +13,21 @@ const HomePage = () => {
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Cookie', 'session_id='+session_id);
-    const response = await fetch('https://nwhacks.tbwright.dev/vaults', {
+    const response = await fetch(process.env.EXPO_PUBLIC_API_URL +'/vaults', {
       headers: headers,
       method: 'GET',
+    }).catch((error) => {
+      alert("Vault retrieval failed! (REQUEST)");
+      return;
     });
-    const data = await response.json();
+    if (response.status !== 200) {
+      alert("Vault retrieval failed! (not 200)");
+      return;
+    }
+    const data = await response.json().catch((error) => {
+      alert("Vault retrieval failed! (JSON)");
+      return;
+    });
     const vaults = data['vaults'];
     console.log(vaults);
     const cards = []
@@ -76,10 +86,29 @@ const HomePage = () => {
     setNewVaultTitle('');
   };
 
-  const handleCreateVault = () => {
-    console.log('Creating new vault with title: ' + newVaultTitle);
+  const handleCreateVault = async (vaultTitle, navigation) => {
+    const session_id = await AsyncStorage.getItem('session_id').catch((error) => {
+      alert("Vault creation failed! (session_id)");
+      handleModalClose();
+      return;
+    });
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Cookie', 'session_id='+session_id);
+    const response = await fetch(process.env.EXPO_PUBLIC_API_URL +'/vaults', {
+      headers: headers,
+      method: 'POST',
+      body: JSON.stringify({
+        name: vaultTitle,
+      }),
+    }).catch((error) => {
+      alert("Vault creation failed!");
+      handleModalClose();
+      return;
+    });
 
     handleModalClose();
+    navigation.navigate('Create');
   };
 
   return (
@@ -115,7 +144,7 @@ const HomePage = () => {
               <TouchableOpacity style={styles.modalButton} onPress={handleModalClose}>
                 <Text style={styles.buttonText}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.modalButton} onPress={handleCreateVault}>
+              <TouchableOpacity style={styles.modalButton} onPress={() => {handleCreateVault(newVaultTitle, navigation)}}>
                 <Text style={styles.buttonText}>Create</Text>
               </TouchableOpacity>
             </View>
