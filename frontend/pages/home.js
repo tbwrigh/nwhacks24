@@ -46,14 +46,31 @@ const HomePage = () => {
     setSelectedItem(null);
   };
 
+  const [isPlusButtonClicked, setIsPlusButtonClicked] = useState(false);
+
+  const handlePlusButton = () => {
+    console.log('Plus button pressed');
+  };
+
   return (
     <View style={styles.container}>
+      {/* Plus button */}
+      <TouchableOpacity
+        style={styles.plusButton}
+        onPress={handlePlusButton}
+      >
+        <Icon name="plus" size={24} color="white" />
+      </TouchableOpacity>
+
+      {/* FlatList */}
       <FlatList
         data={data}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         style={styles.flatList}
       />
+
+      {/* Modal */}
       {selectedItem && (
         <Modal transparent={true} animationType="slide">
           <View style={styles.modalContainer}>
@@ -113,6 +130,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 50,
     right: 20,
+  },
+  plusButton: {
+    position: 'absolute',
+    top: 0, // Set to 0 to position at the absolute top
+    right: 20,
+    backgroundColor: 'blue',
+    borderRadius: 50,
+    padding: 10,
+    zIndex: 1, // Ensures the plus button stays above the FlatList
   },
 });
 
