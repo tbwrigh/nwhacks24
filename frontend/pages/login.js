@@ -46,7 +46,7 @@ const LoginPage = ({ navigation }) => {
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.subText}>Password</Text>
-          <TextInput style={styles.textBar} autoCapitalize="none" onChangeText={text => setPassword(text)} placeholder="Enter your password" />
+          <TextInput style={styles.textBar} autoCapitalize="none" onChangeText={text => setPassword(text)} placeholder="Enter your password" secureTextEntry={true} />
         </View>
         <TouchableOpacity style={styles.loginButton} onPress={() => {doLogin(username, password, navigation)}}>
           <Text style={styles.loginButtonText}>Login</Text>
@@ -69,12 +69,14 @@ const styles = StyleSheet.create({
   },
   box: {
     flex: 1,
-    backgroundColor: 'gray',
+    backgroundColor: '#b0aeae',
     alignSelf: 'stretch',
     marginVertical: '50%',
     borderRadius: 15,
     padding: 20,
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
+    //alignItems: 'center',
+    margin: 20,
   },
   headerText: {
     fontSize: 30,
@@ -93,6 +95,7 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     borderWidth: 1,
     borderRadius: 10,
+    padding: 15,
   },
   loginButton: {
     backgroundColor: 'green',
