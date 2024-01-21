@@ -123,6 +123,7 @@ const HomePage = ({ navigation }) => {
 
   const handleLogoutConfirm = () => {
     setIsLogoutModalVisible(false);
+    navigation.navigate('Create');
   };
 
   const handleLogoutCancel = () => {
@@ -150,6 +151,13 @@ const HomePage = ({ navigation }) => {
         onPress={handleProfileButton}
       >
         <Icon name="user-circle" size={24} color="white" />
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={handleLogoutButton}
+      >
+        <Icon name="sign-out" size={24} color="white" />
       </TouchableOpacity>
 
       {/* FlatList */}
