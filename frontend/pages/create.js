@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, FlatList, Text, TouchableOpacity, StyleSheet, Image, Modal, Button } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import base64 from 'react-native-base64';
+import * as ImagePicker from 'expo-image-picker';
 
 const CreatePage = ({ route, navigation }) => {
 
@@ -88,7 +88,59 @@ const CreatePage = ({ route, navigation }) => {
       return;
     });
   }
+
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Sorry, we need camera roll permissions to make this work!');
+      return;
+    }
   
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      const name = Math.random().toString(36).substring(2);
+
+      const formData = new FormData();
+      formData.append('file', {
+        uri: result.uri,
+        type: 'image/png',
+        name: name + '.png',
+      });
+
+      const session_id = await AsyncStorage.getItem('session_id').catch((error) => {
+        alert("Vault creation failed! (AsyncStorage)");
+        return;
+      });
+      const headers = new Headers();
+      headers.append('Content-Type', 'multipart/form-data');
+      headers.append('Cookie', 'session_id='+session_id);
+      
+      const response = await fetch(process.env.EXPO_PUBLIC_API_URL +'/vault/objects/' + vaultName, {
+        headers: headers,
+        method: 'POST',
+        body: formData,
+      }).catch((error) => {
+        alert("Vault creation failed! (REQUEST)");
+        return;
+      });
+
+      if (response.status !== 200) {
+        alert("Vault creation failed! (not 200)");
+        return;
+      }
+
+      loadObjects();
+    }
+  };  
 
   useEffect(() => {
     loadObjects();
@@ -112,18 +164,12 @@ const CreatePage = ({ route, navigation }) => {
     setSelectedItem(null);
   };
 
-  const [isPlusButtonClicked, setIsPlusButtonClicked] = useState(false);
-
-  const handlePlusButton = () => {
-    console.log('Plus button pressed');
-  };
-
   return (
     <View style={styles.container}>
       {/* Plus button */}
       <TouchableOpacity
         style={styles.plusButton}
-        onPress={handlePlusButton}
+        onPress={pickImage}
       >
         <Icon name="plus" size={24} color="white" />
       </TouchableOpacity>
