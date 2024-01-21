@@ -197,3 +197,11 @@ def lock_vault(vault_name: str, user: User = Depends(get_authenticated_user_from
         vault.days_locked_for = duration['duration']
         session.commit()
         return {"message": "Vault locked successfully"}
+    
+@app.post("/logout")
+def logout(request: Request):
+    session_id = request.cookies.get("session_id")
+    if session_id is None:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authenticated")
+    app.state.cache.delete(f"session-{session_id}")
+    return {"message": "Logged out successfully"}
