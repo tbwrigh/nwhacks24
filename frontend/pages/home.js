@@ -117,6 +117,24 @@ const HomePage = ({ navigation }) => {
     navigation.navigate('Create');
   };
 
+  const handleProfileButton = () => {
+    navigation.navigate('Create');
+  };
+
+  const handleLogoutConfirm = () => {
+    setIsLogoutModalVisible(false);
+  };
+
+  const handleLogoutCancel = () => {
+    setIsLogoutModalVisible(false);
+  };
+
+  const handleLogoutButton = () => {
+    setIsLogoutModalVisible(true);
+  };
+
+  const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
+
   return (
     <View style={styles.container}>
       {/* Plus button */}
@@ -125,6 +143,13 @@ const HomePage = ({ navigation }) => {
         onPress={handlePlusButton}
       >
         <Icon name="plus" size={24} color="white" />
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.profileButton}
+        onPress={handleProfileButton}
+      >
+        <Icon name="user-circle" size={24} color="white" />
       </TouchableOpacity>
 
       {/* FlatList */}
@@ -164,9 +189,27 @@ const HomePage = ({ navigation }) => {
           {/* Existing code for the modal */}
         </Modal>
       )}
+
+     {/* Modal for log-out confirmation */}
+      <Modal transparent={true} animationType="slide" visible={isLogoutModalVisible}>
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Log Out</Text>
+          <Text>Are you sure you want to log out?</Text>
+          <View style={styles.modalButtons}>
+            <TouchableOpacity style={styles.modalButton} onPress={handleLogoutCancel}>
+              <Text style={styles.buttonText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modalButton} onPress={handleLogoutConfirm}>
+              <Text style={styles.buttonText}>Log Out</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -253,6 +296,15 @@ const styles = StyleSheet.create({
     color: 'blue',
     fontWeight: 'bold',
   },
+  profileButton: {
+    position: 'absolute',
+    top: 0,
+    left: 20,
+    backgroundColor: 'green',
+    borderRadius: 50,
+    padding: 10,
+    zIndex: 1,
+  },  
 });
 
 export default HomePage;
