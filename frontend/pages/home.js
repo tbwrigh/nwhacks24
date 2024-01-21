@@ -288,7 +288,7 @@ const HomePage = ({ navigation }) => {
         style={styles.logoutButton}
         onPress={handleLogoutButton}
       >
-        <Icon name="sign-out" size={24} color="blue" />
+        <Icon name="sign-out" size={24} color="white" />
       </TouchableOpacity>
 
       {/* FlatList */}
@@ -347,6 +347,7 @@ const HomePage = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#e4e8f5',
   },
   flatList: {
     flex: 1,
@@ -403,7 +404,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '5%', // Set to 0 to position at the absolute top
     left: 20,
-    backgroundColor: 'white',
+    backgroundColor: 'blue',
     borderRadius: 50,
     padding: 10,
     marginBottom: 20,
