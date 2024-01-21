@@ -245,11 +245,12 @@ const styles = StyleSheet.create({
   },
   plusButton: {
     position: 'absolute',
-    top: 0, // Set to 0 to position at the absolute top
+    top: '5%', // Set to 0 to position at the absolute top
     right: 20,
     backgroundColor: 'blue',
     borderRadius: 50,
     padding: 10,
+    marginBottom: 20,
     zIndex: 1, // Ensures the plus button stays above the FlatList
   },
 });
