@@ -118,7 +118,7 @@ def new_vault(user: User = Depends(get_authenticated_user_from_session_id), name
     if user is None:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authenticated")
     with app.state.db.session() as session:
-        vault = session.query(Vault).filter(Vault.user_id == user.id, Vault.name == name['name']).first()
+        vault = session.query(Vault).filter(Vault.name == name['name']).first()
         if vault:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Vault with that name already exists")
     bucket_name = f"{user.username}-{name['name']}-{random.randint(100000000, 999999999)}"
@@ -136,7 +136,14 @@ def get_vaults(user: User = Depends(get_authenticated_user_from_session_id)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authenticated")
     with app.state.db.session() as session:
         vaults = session.query(Vault).filter(Vault.user_id == user.id).all()
-        return {"vaults": vaults}
+    
+    with app.state.db.session() as session:
+        shares = session.query(Share).filter(Share.user_id == user.id).all()
+        for share in shares:
+            vault = session.query(Vault).filter(Vault.id == share.vault_id , Vault.locked_at != None).first()
+            vaults.append(vault)
+
+    return {"vaults": vaults}
 
 @app.get("/vault/objects/{vault_name}")
 def get_vault(vault_name: str, user: User = Depends(get_authenticated_user_from_session_id)):
@@ -144,6 +151,14 @@ def get_vault(vault_name: str, user: User = Depends(get_authenticated_user_from_
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authenticated")
     with app.state.db.session() as session:
         vault = session.query(Vault).filter(Vault.user_id == user.id, Vault.name == vault_name).first()
+
+        vault_shares = session.query(Share).filter(Share.user_id == user.id).all()
+        for share in vault_shares:
+            shared_vault = session.query(Vault).filter(Vault.id == share.vault_id, Vault.locked_at != None).first()
+            if shared_vault and shared_vault.name == vault_name:
+                vault = shared_vault
+                break
+
         if vault is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vault not found")
     
@@ -181,6 +196,14 @@ def download_object(vault_name: str, object_name: str, user: User = Depends(get_
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authenticated")
     with app.state.db.session() as session:
         vault = session.query(Vault).filter(Vault.user_id == user.id, Vault.name == vault_name).first()
+
+        vault_shares = session.query(Share).filter(Share.user_id == user.id).all()
+        for share in vault_shares:
+            shared_vault = session.query(Vault).filter(Vault.id == share.vault_id, Vault.locked_at != None).first()
+            if shared_vault and shared_vault.name == vault_name:
+                vault = shared_vault
+                break
+
         if vault is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vault not found")
 
@@ -221,6 +244,14 @@ def get_shares(vault_name: str, user: User = Depends(get_authenticated_user_from
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authenticated")
     with app.state.db.session() as session:
         vault = session.query(Vault).filter(Vault.user_id == user.id, Vault.name == vault_name).first()
+
+        vault_shares = session.query(Share).filter(Share.user_id == user.id).all()
+        for share in vault_shares:
+            shared_vault = session.query(Vault).filter(Vault.id == share.vault_id, Vault.locked_at != None).first()
+            if shared_vault and shared_vault.name == vault_name:
+                vault = shared_vault
+                break
+
         if vault is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vault not found")
         
@@ -234,6 +265,7 @@ def share(vault_name: str, user: User = Depends(get_authenticated_user_from_sess
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authenticated")
     with app.state.db.session() as session:
         vault = session.query(Vault).filter(Vault.user_id == user.id, Vault.name == vault_name).first()
+
         if vault is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vault not found")
         
