@@ -342,13 +342,18 @@ const styles = StyleSheet.create({
   enlargedImage: {
     width: '100%',
     height: '100%',
-    resizeMode: 'contain',
+    resizeMode: 'stretch',
   },
   closeButton: {
     position: 'absolute',
     top: 50,
     right: 20,
     backgroundColor: 'blue',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   plusButton: {
     position: 'absolute',
