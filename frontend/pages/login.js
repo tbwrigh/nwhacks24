@@ -13,7 +13,10 @@ const doLogin = async (username, password, navigation) => {
   const response = await fetch("http://localhost:8000/login", {
     headers: headers,
     method: 'POST',
-  })
+  }).catch((error) => {
+    alert("Login failed!");
+    return;
+  });
   if (response.status !== 200) {
     alert("Login failed!");
     return;
