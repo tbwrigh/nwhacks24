@@ -78,15 +78,18 @@ const CreatePage = ({ route, navigation }) => {
       return;
     }
 
+
     const data = await response.blob().catch((error) => {
       alert("Vault retrieval failed! (blob)");
       return;
     });
 
-    return await blobToBase64(data).catch((error) => {
+    const base64 = await blobToBase64(data).catch((error) => {
       alert("Vault retrieval failed! (blobToBase64)");
       return;
     });
+
+    return base64 
   }
 
   const pickImage = async () => {
@@ -104,14 +107,12 @@ const CreatePage = ({ route, navigation }) => {
       quality: 1,
     });
 
-    console.log(result);
-
     if (!result.cancelled) {
       const name = Math.random().toString(36).substring(2);
 
       const formData = new FormData();
       formData.append('file', {
-        uri: result.uri,
+        uri: result.assets[0]["uri"],
         type: 'image/png',
         name: name + '.png',
       });
@@ -133,12 +134,18 @@ const CreatePage = ({ route, navigation }) => {
         return;
       });
 
+      if (!response.ok) {
+        alert("Vault creation failed! (not ok)");
+        return;
+      }
+
       if (response.status !== 200) {
         alert("Vault creation failed! (not 200)");
         return;
       }
 
       loadObjects();
+
     }
   };  
 

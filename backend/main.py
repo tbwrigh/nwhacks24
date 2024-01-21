@@ -188,7 +188,7 @@ def download_object(vault_name: str, object_name: str, user: User = Depends(get_
 
             if datetime.now().date() < unlock_date:
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Vault is locked")
-
+            
         object = app.state.minio_client.get_object(vault.bucket_name, object_name)
 
         return StreamingResponse(object, media_type="application/octet-stream")
