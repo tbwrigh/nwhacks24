@@ -6,7 +6,6 @@ import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 const HomePage = ({ navigation }) => {
   const [data, setData] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
 
   const getVaults = async () => {
     const session_id = await AsyncStorage.getItem('session_id');
@@ -66,15 +65,9 @@ const HomePage = ({ navigation }) => {
   );
 
   const handlePress = async (item, navigation) => {
-    setSelectedItem(item);
-
     navigation.navigate('Create', {
       vaultName: item.title,
     });
-  };
-
-  const handleClose = () => {
-    setSelectedItem(null);
   };
 
   const [isPlusButtonClicked, setIsPlusButtonClicked] = useState(false);
@@ -196,13 +189,6 @@ const HomePage = ({ navigation }) => {
           </View>
         </View>
       </Modal>
-
-      {/* Modal for displaying selected item */}
-      {selectedItem && (
-        <Modal transparent={true} animationType="slide">
-          {/* Existing code for the modal */}
-        </Modal>
-      )}
 
      {/* Modal for log-out confirmation */}
       <Modal transparent={true} animationType="slide" visible={isLogoutModalVisible}>
