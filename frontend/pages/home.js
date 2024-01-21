@@ -116,12 +116,13 @@ const HomePage = ({ navigation }) => {
   };
 
   const handleProfileButton = () => {
-    navigation.navigate('Create');
+    // navigation.navigate('Create');
+    // this should be a pop up
   };
 
   const handleLogoutConfirm = () => {
     setIsLogoutModalVisible(false);
-    navigation.navigate('Create');
+    navigation.navigate('Login');
   };
 
   const handleLogoutCancel = () => {
