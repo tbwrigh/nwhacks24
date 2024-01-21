@@ -102,10 +102,16 @@ const HomePage = ({ navigation }) => {
         name: vaultTitle,
       }),
     }).catch((error) => {
-      alert("Vault creation failed!");
+      alert("Vault creation failed! (REQ)");
       handleModalClose();
       return;
     });
+
+    if (response.status !== 200) {
+      alert("Vault creation failed! (PORT)" + response.status);
+      handleModalClose();
+      return;
+    }
 
     handleModalClose();
     navigation.navigate('Create');

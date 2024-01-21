@@ -118,7 +118,8 @@ def new_vault(user: User = Depends(get_authenticated_user_from_session_id), name
         vault = session.query(Vault).filter(Vault.user_id == user.id, Vault.name == name['name']).first()
         if vault:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Vault with that name already exists")
-    bucket_name = f"{user.username}-vault-{name['name']}-{random.randint(100000000, 999999999)}"
+    bucket_name = f"{user.username}-{name['name']}-{random.randint(100000000, 999999999)}"
+    bucket_name = bucket_name.lower()
     app.state.minio_client.make_bucket(bucket_name)
     with app.state.db.session() as session:
         new_vault = Vault(name=name['name'], user_id=user.id, bucket_name=bucket_name)
