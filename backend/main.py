@@ -12,6 +12,7 @@ import random
 
 from models.user import User
 from models.vault import Vault
+from models.share import Share
 from db import DB
 
 from minio import Minio
@@ -213,3 +214,48 @@ def logout(request: Request):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authenticated")
     app.state.cache.delete(f"session-{session_id}")
     return {"message": "Logged out successfully"}
+
+@app.get("/vault/share/{vault_name}")
+def get_shares(vault_name: str, user: User = Depends(get_authenticated_user_from_session_id)):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authenticated")
+    with app.state.db.session() as session:
+        vault = session.query(Vault).filter(Vault.user_id == user.id, Vault.name == vault_name).first()
+        if vault is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vault not found")
+        
+        shares = session.query(Share).filter(Share.vault_id == vault.id).all()
+
+        return {"shares": shares}
+
+@app.post("/vault/share/{vault_name}")
+def share(vault_name: str, user: User = Depends(get_authenticated_user_from_session_id), username=Body(...)):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authenticated")
+    with app.state.db.session() as session:
+        vault = session.query(Vault).filter(Vault.user_id == user.id, Vault.name == vault_name).first()
+        if vault is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vault not found")
+        
+        user_to_share = session.query(User).filter(User.username == username['username']).first()
+        if user_to_share is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        
+        share = session.query(Share).filter(Share.user_id == user_to_share.id, Share.vault_id == vault.id).first()
+        if share:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Vault already shared with this user")
+        
+        new_share = Share(user_id=user_to_share.id, vault_id=vault.id)
+        session.add(new_share)
+        session.commit()
+
+        return {"message": "Vault shared successfully"}
+    
+@app.get("/users")
+def get_users(user: User = Depends(get_authenticated_user_from_session_id)):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authenticated")
+
+    with app.state.db.session() as session:
+        users = session.query(User).all()
+        return {"users": users}
