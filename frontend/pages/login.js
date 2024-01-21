@@ -21,8 +21,14 @@ const doLogin = async (username, password, navigation) => {
     alert("Login failed!");
     return;
   }
-  const json = await response.json();
-  await AsyncStorage.setItem('session_id', json['session_id'].toString());
+  const json = await response.json().catch((error) => {
+    alert("Login failed!");
+    return;
+  });
+  await AsyncStorage.setItem('session_id', json['session_id'].toString()).catch((error) => {
+    alert("Login failed!");
+    return;
+  });
   navigation.navigate('Home'); // this is a navigation prop that doesnt work for some reason I think
 }
 
