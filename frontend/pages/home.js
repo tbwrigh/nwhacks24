@@ -115,12 +115,33 @@ const HomePage = ({ navigation }) => {
     });
   };
 
-  const handleProfileButton = () => {
-    // navigation.navigate('Create');
-    // this should be a pop up
-  };
+  const handleLogoutConfirm = async () => {
+    const session_id = await AsyncStorage.getItem('session_id').catch((error) => {
+      alert("Logout failed!");
+      return;
+    });
 
-  const handleLogoutConfirm = () => {
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Cookie', 'session_id='+session_id);
+
+    const response = await fetch(process.env.EXPO_PUBLIC_API_URL +'/logout', {
+      method: 'POST',
+      headers: headers,
+    }).catch((error) => {
+      alert("Logout failed!");
+      return;
+    });
+
+    if (response.status !== 200) {
+      alert("Logout failed!");
+      return;
+    }
+
+    await AsyncStorage.removeItem('session_id').catch((error) => {
+      alert("Logout failed!");
+      return;
+    });
     setIsLogoutModalVisible(false);
     navigation.navigate('Login');
   };
@@ -143,13 +164,6 @@ const HomePage = ({ navigation }) => {
         onPress={handlePlusButton}
       >
         <Icon name="plus" size={24} color="white" />
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.profileButton}
-        onPress={handleProfileButton}
-      >
-        <Icon name="user-circle" size={24} color="white" />
       </TouchableOpacity>
 
       <TouchableOpacity
