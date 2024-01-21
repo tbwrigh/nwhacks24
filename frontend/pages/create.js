@@ -78,8 +78,6 @@ const CreatePage = ({ route, navigation }) => {
       return;
     }
 
-    console.log(response);
-
     const data = await response.blob().catch((error) => {
       alert("Vault retrieval failed! (blob)");
       return;
